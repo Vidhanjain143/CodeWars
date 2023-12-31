@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<Home/>}/>
-        <Route path='/workspace' element={<Workspace/>}/>
+        <Route path='/workspace/:id' element={<Workspace/>}/>
       </Routes>
     </Router>
   )

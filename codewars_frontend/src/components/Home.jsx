@@ -2,11 +2,14 @@ import React, { useState } from 'react'
 import Navbar from './Navbars/Navbar'
 import Coder from "../assets/coder.jpg"
 import { useSelector } from 'react-redux';
+import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
   const [selectedValue, setSelectedValue] = useState('easy');
-  //const {onClicked,setOnClicked}=useContext(ClickContext);
   const onClicked=useSelector(state=>state.signupClick);
+  const serverUrl=import.meta.env.VITE_PUBLIC_SERVER_URL;
+  const navigate=useNavigate();
   const handleDropdownChange = (event) => {
     setSelectedValue(event.target.value);
   };
@@ -15,6 +18,13 @@ const Home = () => {
     "medium":"You will get 45 mins for 3 problems",
     "hard":"You will get 1 hour for 3 problems"
   }
+
+  const createRoom=async()=>{
+       const response=await axios.post(serverUrl+'/create-room',{category:selectedValue})
+       const roomId=response.data.roomId;
+       navigate('/workspace/'+roomId);
+  }
+ 
   return (
     <div className={`max-w-screen bg-slate-800 min-h-screen ${onClicked?`opacity-75`:``}`}>
         <Navbar/>
@@ -30,7 +40,7 @@ const Home = () => {
                     <option value="hard">Hard</option>
                 </select>
               </div>
-              <button className='bg-green-500 text-white p-3 rounded-3xl'> Create Room</button>
+              <button className='bg-green-500 text-white p-3 rounded-3xl' onClick={createRoom}> Create Room</button>
             </div>
             <div className='text-white font-light'>ℹ️{displayTime[selectedValue]}</div>
             </div>
@@ -41,3 +51,20 @@ const Home = () => {
 }
 
 export default Home
+
+
+
+
+ // const joinRoom=(roomId)=>{
+  //       const socket=io(serverUrl);
+  //       try{
+  //       socket.on('connect', () => {
+  //         console.log(`Connected to Socket.IO server as ${socket.id}`);
+  //         console.log(socket);
+  //         dispatch(setSocketID(socket.id));
+  //         socket.emit('join-room',roomId)
+  //       });
+  //     }catch(err){
+  //       console.log(err);
+  //     }
+  // }
