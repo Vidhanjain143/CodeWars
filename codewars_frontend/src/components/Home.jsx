@@ -8,7 +8,7 @@ import {useNavigate} from 'react-router-dom'
 const Home = () => {
   const [selectedValue, setSelectedValue] = useState('easy');
   const onClicked=useSelector(state=>state.signupClick);
-  const serverUrl=import.meta.env.VITE_PUBLIC_SERVER_URL;
+  const serverUrl=import.meta.env.VITE_SERVER_URL;
   const navigate=useNavigate();
   const handleDropdownChange = (event) => {
     setSelectedValue(event.target.value);
@@ -51,20 +51,3 @@ const Home = () => {
 }
 
 export default Home
-
-
-
-
- // const joinRoom=(roomId)=>{
-  //       const socket=io(serverUrl);
-  //       try{
-  //       socket.on('connect', () => {
-  //         console.log(`Connected to Socket.IO server as ${socket.id}`);
-  //         console.log(socket);
-  //         dispatch(setSocketID(socket.id));
-  //         socket.emit('join-room',roomId)
-  //       });
-  //     }catch(err){
-  //       console.log(err);
-  //     }
-  // }

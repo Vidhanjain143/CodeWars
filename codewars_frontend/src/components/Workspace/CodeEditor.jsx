@@ -8,7 +8,7 @@ import axios from "axios";
 import { useSelector } from 'react-redux';
 
 const CodeEditor = () => {
-    const user=useSelector(state=>state.auth.user);
+    const user=useSelector(state=>state.auth);
     const [code,setCode]=useState('')
     const [selectedLanguage, setSelectedLanguage] = useState('cpp');
     const [showIP,setShowIP]=useState(true);
@@ -57,8 +57,8 @@ const CodeEditor = () => {
       url: 'https://judge0-ce.p.rapidapi.com/submissions/'+token,
       params: { base64_encoded: "true", fields: "*" },
       headers: {
-        'X-RapidAPI-Key': import.meta.env.VITE_PUBLIC_RAPID_API_KEY,
-        'X-RapidAPI-Host': import.meta.env.VITE_PUBLIC_RAPID_API_HOST,
+        'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
+        'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
       },
   }
   try {

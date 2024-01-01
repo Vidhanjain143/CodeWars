@@ -9,9 +9,9 @@ import { setSignUpClick } from '../../store/slices/SignupClickedSlice';
 
 const Signup = () => {
     const dispatch=useDispatch();
-    const user=useSelector(state=>state.auth.user);
+    const user=useSelector(state=>state.auth);
     const onClicked=useSelector(state=>state.signupClick);
-    if(user) return;
+    if(user.userid) return;
   return (
     <div className={`w-[40%] h-[50%] border-2 border-white fixed top-[30%] left-[30%] bg-white ${onClicked?``:`hidden`} rounded-3xl flex justify-between items-center p-2`}>
         

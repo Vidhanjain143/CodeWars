@@ -12,7 +12,6 @@ const problemSchema=mongoose.Schema({
     inputTestCases:[Number,String],
     expectedOutput:[Number,String],
     constraints:[String],
-    
 })
 
 const Problem=mongoose.model('Problem',problemSchema);

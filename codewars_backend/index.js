@@ -22,7 +22,6 @@ const io = new Server(server,{
 
 app.post('/create-room',async (req,res)=>{
     try{
-        console.log('Hello')
         const {category}=req.body;
         const roomid=uuidv4();
         const newRoom=await Room.create({
@@ -36,12 +35,22 @@ app.post('/create-room',async (req,res)=>{
 })
 
 io.on('connection',(socket)=>{
-    socket.on('join-room',(roomId)=>{
-        socket.join(roomId);
-        console.log(`User ${socket.id} joined room ${roomId}`)
+    socket.on('join-room',({id,userName})=>{
+        console.log("Hello");
+        socket.join(id);
+        console.log(`User ${userName} joined room ${id}`)
+        const message = {
+            userId:1,
+            text: `${userName} joined the room 🔥`,
+            timestamp: new Date().toISOString(),
+          };
+        io.to(id).emit('chat-message',message)
     })
     socket.on('send-chat-message',(message)=>{
         io.emit('chat-message',message);
+    })
+    socket.on('disconnect',()=>{
+        console.log(`User ${socket.id} left`)
     })
 })
 server.listen(port, () => {

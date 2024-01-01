@@ -8,7 +8,8 @@ const roomSchema=mongoose.Schema({
     },
     problems:{
         type:[Number],
-    }  
+    },
+ 
 })
 
 const Room=mongoose.model('Room',roomSchema);
