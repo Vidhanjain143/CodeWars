@@ -32,8 +32,8 @@ const CodeEditor = () => {
       headers: {
         'content-type': 'application/json',
         'Content-Type': 'application/json',
-        'X-RapidAPI-Key': import.meta.env.VITE_PUBLIC_RAPID_API_KEY,
-        'X-RapidAPI-Host': import.meta.env.VITE_PUBLIC_RAPID_API_HOST,
+        'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
+        'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
       },
       data:{
         language_id:language_code,

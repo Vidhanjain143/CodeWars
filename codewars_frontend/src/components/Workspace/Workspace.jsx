@@ -10,19 +10,13 @@ const Workspace = () => {
   const {id}=useParams();
   const serverUrl=import.meta.env.VITE_SERVER_URL;
   const user=useSelector(state=>state.auth);
-  const socket =useMemo(()=>io(serverUrl));
-
-  const joinRoom = useCallback(() => {
-    console.log("Hello")
-    socket.emit('join-room', { id: id, userName: user.displayName });
-    return () => {
-      socket.disconnect();
-    };
-  }, [id, user.displayName,socket]);
-
+  const socket =io(serverUrl);  
+  let count=0;
   useEffect(() => {
-    joinRoom();
-  },[]);
+    console.log("Hello",count);
+    console.log(socket);
+    socket.emit('join-room',({ id: id, userName: user.displayName ,userid:user.userid}));
+  }, []);
   return (
     <>
      <Navbar/>

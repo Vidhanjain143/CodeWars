@@ -19,7 +19,7 @@ const io = new Server(server,{
         methods:["GET","POST"],
     },
 });
-
+const users = {};
 app.post('/create-room',async (req,res)=>{
     try{
         const {category}=req.body;
@@ -33,10 +33,9 @@ app.post('/create-room',async (req,res)=>{
         console.log("Room error=> ",err);
     }  
 })
-
 io.on('connection',(socket)=>{
-    socket.on('join-room',({id,userName})=>{
-        console.log("Hello");
+    socket.on('join-room',({id,userName,userid})=>{
+        users[userid]={socketid:socket.id,userName:userName};
         socket.join(id);
         console.log(`User ${userName} joined room ${id}`)
         const message = {
@@ -44,13 +43,20 @@ io.on('connection',(socket)=>{
             text: `${userName} joined the room 🔥`,
             timestamp: new Date().toISOString(),
           };
-        io.to(id).emit('chat-message',message)
-    })
+        io.to(id).emit('chat-message',message);
+        io.to(id).emit('active-users', Object.values(users).map(user => ({ userName: user.userName })));
+    }
+    )
     socket.on('send-chat-message',(message)=>{
         io.emit('chat-message',message);
     })
+
     socket.on('disconnect',()=>{
-        console.log(`User ${socket.id} left`)
+        const userName = Object.keys(users).find(key => users[key].socketid === socket.id);
+        if (userName) {
+          console.log(`User ${userName} left`);
+          delete users[userName];
+        }
     })
 })
 server.listen(port, () => {
@@ -61,19 +67,3 @@ server.listen(port, () => {
 
 
 
-// io.on('connection', (socket) => {
-//   console.log('New client connected');
-
-//   socket.on('joinRoom', (roomId) => {
-//     socket.join(roomId);
-//     io.to(roomId).emit('message', 'A new user joined the room');
-//   });
-
-//   socket.on('sendMessage', (roomId, message) => {
-//     io.to(roomId).emit('message', message);
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('Client disconnected');
-//   });
-// });

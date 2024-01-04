@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Logo from "../../assets/codewars-logo.png"
 import Signup from '../auth/Signup'
 import { IoIosLogOut } from "react-icons/io";
@@ -14,7 +14,7 @@ const Navbar = () => {
     
   return (
     <>
-    <div className='text-white h-15 flex justify-between items-center px-10 py-3 bg-slate-800'>
+    <div className='text-white h-13 flex justify-between items-center px-10 py-3 bg-slate-800'>
     <div className="flex justify-between items-center gap-4">
         <img src={Logo} alt="Logo" className='h-[50px] w-[400px]' />
     </div>
