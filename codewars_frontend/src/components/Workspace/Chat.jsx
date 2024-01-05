@@ -50,7 +50,7 @@ const Chat = ({socket}) => {
   return (
     <div className='w-[30%] border-2 border-black flex flex-col' >
         <div className="h-[39px] bg-black flex items-center justify-between px-3 py-2">
-         <div className="text-md text-white">Name</div>
+         <div className="text-md text-white">Room 1</div>
          <div className="flex gap-5 text-white text-md mr-2 items-center justify-between">
            <IoLinkSharp size='30px' onClick={handleCopy} className='cursor-pointer'/>
            <IoIosLogOut size='30px' onClick={leaveRoom} className='cursor-pointer'/>
@@ -61,7 +61,7 @@ const Chat = ({socket}) => {
           <div className="grid grid-flow-col justify-start gap-2 overflow-x-auto">
           {activeUsers.map((user, index) => (
           <div key={index} className={`w-10 rounded-full flex items-center justify-center bg-${colors[index%2]} text-white text-lg p-1`}>
-            {user.userName.charAt(0)}
+            {user?.userName?.charAt(0)}
           </div>
         ))}
           </div>

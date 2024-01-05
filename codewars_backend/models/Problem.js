@@ -6,13 +6,17 @@ const problemSchema=mongoose.Schema({
         unique:true,
         required:true,
     },
-    category:String,
     title:String,
-    description:String,
-    inputTestCases:[Number,String],
-    expectedOutput:[Number,String],
+    description:[String],
+    input:String,
+    output:String,
+    inputTestCases:String,
+    expectedOutput:String,
     constraints:[String],
 })
 
-const Problem=mongoose.model('Problem',problemSchema);
-module.exports=Problem;
+const Easy=mongoose.model('Easy',problemSchema);
+const Medium=mongoose.model('Medium',problemSchema);
+const Hard=mongoose.model('Hard',problemSchema);
+
+module.exports={Easy,Medium,Hard}

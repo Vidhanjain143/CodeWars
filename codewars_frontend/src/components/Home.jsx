@@ -14,9 +14,9 @@ const Home = () => {
     setSelectedValue(event.target.value);
   };
   const displayTime={
-    "easy":"You will get 30 mins for 3 problems",
-    "medium":"You will get 45 mins for 3 problems",
-    "hard":"You will get 1 hour for 3 problems"
+    "easy":"You will get 20 mins for 2 problems",
+    "medium":"You will get 30 mins for 2 problems",
+    "hard":"You will get 45 mins for 2 problems"
   }
 
   const createRoom=async()=>{
