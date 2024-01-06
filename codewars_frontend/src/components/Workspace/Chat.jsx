@@ -4,11 +4,12 @@ import { IoIosLogOut} from "react-icons/io";
 import { useSelector } from 'react-redux';
 import { IoSend } from "react-icons/io5";
 const Chat = ({socket}) => {
-  const user=useSelector(state=>state.auth.displayName);
   const userId=useSelector(state=>state.auth.userid);
+  const id=useSelector(state=>state.room.roomId);
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [activeUsers, setActiveUsers] = useState([]);
+  const category =useSelector(state=>state.room.category);
   const colors=[`gray-500`,`blue-600`];
   useEffect(() => {
     socket.on('chat-message', message => {
@@ -16,7 +17,6 @@ const Chat = ({socket}) => {
     });
     socket.on('active-users',(users)=>{
       setActiveUsers(users);
-      console.log(activeUsers);
     })
     return () => {
       socket.off('chat-message');
@@ -47,6 +47,20 @@ const Chat = ({socket}) => {
       e.preventDefault();  
       sendMessage();
    }}
+
+   const handleUserReady=(e)=>{
+    e.preventDefault();
+    console.log(category);
+    if(activeUsers.length<2)
+    {
+      console.log("Less users");
+      return;
+    }
+    socket.emit('user-ready',{userId:userId,roomId:id,category:category});
+    socket.on('timer',(timer)=>{
+      console.log("timer=>",timer);
+    })
+   }
   return (
     <div className='w-[30%] border-2 border-black flex flex-col' >
         <div className="h-[39px] bg-black flex items-center justify-between px-3 py-2">
@@ -65,7 +79,7 @@ const Chat = ({socket}) => {
           </div>
         ))}
           </div>
-          <button className='bg-blue-600 text-white mt-2  py-1 rounded-xl hover:shadow-md hover:shadow-blue-400 mb-1'>Are you Ready!!!</button>
+          <button className='bg-blue-600 text-white mt-2  py-1 rounded-xl hover:shadow-md hover:shadow-blue-400 mb-1' onClickCapture={handleUserReady}>Are you Ready!!!</button>
         </div>
         {/*Chat Section*/}
         <div className="bg-slate-900 flex-1">

@@ -5,17 +5,31 @@ import CodeEditor from './CodeEditor'
 import Chat from './Chat'
 import { useParams } from 'react-router-dom'
 import {io} from 'socket.io-client'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+import { setRoom } from '../../store/slices/RoomSlice'
 const Workspace = () => {
   const {id}=useParams();
   const serverUrl=import.meta.env.VITE_SERVER_URL;
   const user=useSelector(state=>state.auth);
   const socket =io(serverUrl);  
-  let count=0;
+  const dispatch=useDispatch();
   useEffect(() => {
-    console.log("Hello",count);
-    console.log(socket);
-    socket.emit('join-room',({ id: id, userName: user.displayName ,userid:user.userid}));
+    const fetchRoom=async()=>{
+      const room=await axios.get(serverUrl+`/get-room?roomId=`+id);
+      if(room.data.category){
+      dispatch(setRoom({roomId:room.data.roomId,category:room.data.category}));
+      socket.emit('join-room',({ id: id, userName: user.displayName ,userid:user.userid}));
+      }
+      else {
+        alert("No room");
+      }
+    }
+    fetchRoom();
+
+  return ()=>{
+    socket.disconnect();
+  }
   }, []);
   return (
     <>

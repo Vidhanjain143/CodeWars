@@ -10,10 +10,11 @@ import { useSelector } from 'react-redux';
 const CodeEditor = () => {
     const user=useSelector(state=>state.auth);
     const [code,setCode]=useState('')
+    const id=1
     const [selectedLanguage, setSelectedLanguage] = useState('cpp');
     const [showIP,setShowIP]=useState(true);
-    const [input,setInput]=useState('')
-    const [output,setOutput]=useState('Hello')
+    const [input,setInput]=useState(atob("Mwo0IDkKMiA3IDExIDE1CjMgNgozIDIgNAoyIDYKMyAz"))
+    const [output,setOutput]=useState(atob('MCAxCjEgMgowIDE='))
     const language_code=(selectedLanguage==='cpp'?54:(selectedLanguage==='javascript'?63:26));
   
     const handleLanguageSelection = (event) => {
@@ -72,11 +73,17 @@ const CodeEditor = () => {
       }, 2000);}
       else {
         console.log(response.data);
+        if(response.data.status.id===3)
         setOutput(atob(response.data.stdout));
+       else setOutput(response.data.status.description);
       }
  }catch(error){
   console.log(error);
  }
+}
+const handleCodeChange=(e)=>{
+    setCode(e);
+    localStorage.setItem(`code-${id}`,e);
 }
   return (
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>
@@ -90,7 +97,7 @@ const CodeEditor = () => {
         </div>
         <CodeMirror value={code} theme={vscodeDark} style={{fontSize:'16px'}} maxHeight={(showIP?'390px':'550px')} placeholder={'Write you code here'}
         extensions={[(selectedLanguage==='javascript'?javascript():(selectedLanguage==='cpp'?cpp():java()))]}
-        onChange={(e)=>setCode(e)} />
+        onChange={handleCodeChange} />
         { showIP &&(
           <div className="w-[40%] absolute bottom-[52px] [h-[150px] flex gap-2 p-2 bg-slate-800 border-t-gray-700 border-t-2 transition-all delay-100">
             <div className="flex flex-col w-[50%] justify-center gap-2">
@@ -99,12 +106,12 @@ const CodeEditor = () => {
             </div>
             <div className="flex flex-col w-[50%] justify-center gap-2">
               <div className="text-white">Output</div>
-              <div className=" bg-slate-600 text-white h-[120px] cursor-text outline-none rounded-lg p-1" > {output}</div>
+              <textarea className=" bg-slate-600 text-white h-[120px] cursor-text outline-none rounded-lg p-1" readOnly={true} value={output}/>
             </div>
           </div>
         )}
         <div className=" bg-slate-800 w-[40%]  absolute bottom-1 text-black flex justify-between p-2 gap-3 border-t-2 border-gray-700">
-          <div className="text-white bg-gray-600 p-1 rounded-xl px-2 cursor-pointer" onClick={()=>setShowIP(!showIP)}>Console {(showIP===true?' ↓':' ↑')}</div>
+          <div className="text-white bg-gray-600 p-1 rounded-xl px-2 cursor-pointer font-normal" onClick={()=>setShowIP(!showIP)}>Console {(showIP===true?' 👇🏻':' 👆🏻')}</div>
           <div className="flex gap-4 items-center mr-3">
           <div className="text-white bg-gray-600 px-2 py-1 rounded-xl w-[60px] flex justify-center cursor-pointer" onClick={handleCodeRun}>Run</div>
           <div className="text-white bg-green-700 py-1 w-[80px]flex justify-center px-2 rounded-xl cursor-pointer">Submit</div>
