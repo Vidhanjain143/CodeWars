@@ -45,6 +45,23 @@ app.get('/get-room',async(req,res)=>{
     const room=await Room.findOne({roomId:roomId})
     res.send(room);
 })
+
+app.post('/get-problems',async(req,res)=>{
+    const {id}=req.body;
+    const {category}=req.body;
+    console.log(id);
+    try{
+    let problems;
+    if(category==='easy')
+     problems=await Easy.find({id:id});
+    else if(category==='medium')
+    problems=await Medium.find({id:id});
+    else problems=await Hard.find({id:id});
+    res.send(problems);
+    }catch(err){
+        console.log(err);
+    }
+})
 io.on('connection',(socket)=>{
     socket.on('join-room',({id,userName,userid})=>{
         users[userid]={socketid:socket.id,userName:userName};
