@@ -1,9 +1,14 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 const ProblemDescription = () => {
+  const problems=useSelector(state=>state.problems);
   return (
     <div className='w-[30%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] text-white border-r-2 border-white'>
-        <div className="bg-black h-[40px] flex items-end"><span className='text-white bg-slate-800 ml-2 p-1 rounded-tl-lg rounded-tr-lg'>Introduction</span></div>
+        <div className="bg-black h-[40px] flex items-end justify-between">
+          <div className='text-white bg-slate-800 ml-2 py-1 px-2 rounded-tl-md rounded-tr-md'>Introduction</div>
+          <div className='text-white bg-slate-800 mr-2 py-1 px-2 rounded-tl-md rounded-tr-md'>Introduction</div>
+        </div>
         <div className="font-2xl p-3">
         <span className='text-xl font-semibold'>Welcome 🎉 to CodeWars!</span><br/><br/>
         Let's get you set up and ready to compete.<br/>

@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from './slices/AuthSlice'
 import signupClickReducer from './slices/SignupClickedSlice'
-import socketReducer from './slices/SocketSlice'
 import roomReducer from './slices/RoomSlice'
+import problemsReducer from './slices/ProblemsSlice'
+import selectedProblemReducer from './slices/SelectedProblem'
+
 const store=configureStore({
     reducer:{
         auth:authReducer,
         signupClick:signupClickReducer,
-        socket:socketReducer,
         room:roomReducer,
+        problems:problemsReducer,
+        selectedProblem:selectedProblemReducer
     }
 })
 

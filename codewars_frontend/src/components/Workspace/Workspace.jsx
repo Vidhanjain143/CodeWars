@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, {  useEffect } from 'react'
 import Navbar from '../Navbars/Navbar'
 import ProblemDescription from './ProblemDescription'
 import CodeEditor from './CodeEditor'
@@ -8,6 +8,7 @@ import {io} from 'socket.io-client'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { setRoom } from '../../store/slices/RoomSlice'
+import { setProblems } from '../../store/slices/ProblemsSlice'
 const Workspace = () => {
   const {id}=useParams();
   const serverUrl=import.meta.env.VITE_SERVER_URL;
@@ -16,9 +17,13 @@ const Workspace = () => {
   const dispatch=useDispatch();
   useEffect(() => {
     const fetchRoom=async()=>{
-      const room=await axios.get(serverUrl+`/get-room?roomId=`+id);
-      if(room.data.category){
-      dispatch(setRoom({roomId:room.data.roomId,category:room.data.category}));
+      const room=await axios.get(serverUrl+`/get-room?roomId=`+id).then((res)=>res.data).catch((err)=>{console.log(err)});
+      console.log(room);
+      const problems=await axios.post(serverUrl+'/get-problems',{id:room.problems,category:room.category}).then((res)=>res.data).catch((err)=>{console.log(err)});
+      console.log(problems);
+      if(room.category){
+      dispatch(setProblems(problems));
+      dispatch(setRoom({roomId:room.roomId,category:room.category}));
       socket.emit('join-room',({ id: id, userName: user.displayName ,userid:user.userid}));
       }
       else {
