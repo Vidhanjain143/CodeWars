@@ -10,6 +10,9 @@ const Chat = ({socket}) => {
   const [messageInput, setMessageInput] = useState('');
   const [activeUsers, setActiveUsers] = useState([]);
   const category =useSelector(state=>state.room.category);
+  const [time,setTime]=useState(1145);
+  const [minutes,setMinutes]=useState(0);
+  const [seconds,setSeconds]=useState(0);
   const colors=[`gray-500`,`blue-600`];
   useEffect(() => {
     socket.on('chat-message', message => {
@@ -18,13 +21,26 @@ const Chat = ({socket}) => {
     socket.on('active-users',(users)=>{
       setActiveUsers(users);
     })
+    socket.on('timer',({timer,timerStarted})=>{
+      console.log(timer,timerStarted);
+      setTime(timer);
+      if(timerStarted) startTimer(timer);
+    })
     return () => {
       socket.off('chat-message');
       sendMessage([])
       socket.off('active-users')
+      socket.off('timer');
     };
   }, [socket]);
-  
+  const startTimer=(timer)=>{
+     const initial=timer;
+     setInterval(()=>{
+         setMinutes(Math.floor(timer/60));
+         setSeconds(timer%60);
+         timer--;
+     },initial)
+  }
   const sendMessage = () => {
     if (messageInput.trim() !== '') {
       const message = {
@@ -54,18 +70,16 @@ const Chat = ({socket}) => {
     if(activeUsers.length<2)
     {
       console.log("Less users");
-      return;
     }
     socket.emit('user-ready',{userId:userId,roomId:id,category:category});
-    socket.on('timer',(timer)=>{
-      console.log("timer=>",timer);
-    })
+   
    }
   return (
     <div className='w-[30%] border-2 border-black flex flex-col' >
         <div className="h-[39px] bg-black flex items-center justify-between px-3 py-2">
          <div className="text-md text-white">Room 1</div>
          <div className="flex gap-5 text-white text-md mr-2 items-center justify-between">
+          <div className="text-white">{(minutes<10?"0"+minutes:minutes)}:{(seconds<10?"0"+seconds:seconds)}</div>
            <IoLinkSharp size='30px' onClick={handleCopy} className='cursor-pointer'/>
            <IoIosLogOut size='30px' onClick={leaveRoom} className='cursor-pointer'/>
          </div>
