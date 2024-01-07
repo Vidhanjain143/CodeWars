@@ -23,7 +23,7 @@ const io = new Server(server,{
     },
 });
 const users = {};
-const readyUser=new Set();
+const readyUser={};
 let startTime;
 const time={ "easy":20,"medium":30,"hard":45};
 app.post('/create-room',async (req,res)=>{
@@ -63,17 +63,23 @@ io.on('connection',(socket)=>{
         io.emit('chat-message',message);
     })
     socket.on('user-ready',({userId,roomId,category})=>{
-        readyUser.add(userId);
-        if(readyUser.size<=2){
+        if(!readyUser[roomId])
+        readyUser[roomId]=new Set();       
+        readyUser[roomId].add(userId);
+        console.log(readyUser);
+        if(readyUser[roomId].size<=2){
         startTime=Date.now();
         const remainingTime=time[category]*60;
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime});
+        if(readyUser[roomId].size===1)
+        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted:false});
+        else io.to(roomId).emit('timer',{timer:remainingTime,timerStarted:true})
       }
       else {
         const elapsedTime=Math.floor((Date.now()-startTime)/1000);
         const remainingTime=(time[category]*60)-elapsedTime;
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime});
+        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted:true});
       }
+      io.to(roomId).emit('chat-message',{userId:1,text:`${users[userId].userName} is ready ⚔️`})
     })
     socket.on('disconnect',()=>{
         const userName = Object.keys(users).find(key => users[key].socketid === socket.id);
