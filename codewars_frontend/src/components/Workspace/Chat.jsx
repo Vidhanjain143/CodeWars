@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { IoLinkSharp } from "react-icons/io5";
 import { IoIosLogOut} from "react-icons/io";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IoSend } from "react-icons/io5";
+import { setTimerStarted } from '../../store/slices/TimerStartedSlice';
 const Chat = ({socket}) => {
   const userId=useSelector(state=>state.auth.userid);
   const id=useSelector(state=>state.room.roomId);
@@ -14,6 +15,7 @@ const Chat = ({socket}) => {
   const [minutes,setMinutes]=useState(0);
   const [seconds,setSeconds]=useState(0);
   const colors=[`gray-500`,`blue-600`];
+  const dispatch=useDispatch();
   useEffect(() => {
     socket.on('chat-message', message => {
       setMessages(prevMessages => [...prevMessages, message]);
@@ -23,6 +25,7 @@ const Chat = ({socket}) => {
     })
     socket.on('timer',({timer,timerStarted})=>{
       console.log(timer,timerStarted);
+      dispatch(setTimerStarted(timerStarted));
       setTime(timer);
       if(timerStarted) startTimer(timer);
     })
@@ -97,6 +100,7 @@ const Chat = ({socket}) => {
         </div>
         {/*Chat Section*/}
         <div className="bg-slate-900 flex-1">
+          <div className="overflow-y-auto h-[60vh]">
         {messages.map((msg, index) => (
         <div key={index} className={`${msg.userId ==1 ? `flex justify-center `:(msg.userId==userId?`flex justify-end ` : `flex justify-start `)} mt-2 px-1`}>
             <div className={`${msg.userId === 1? 'rounded-xl text-sm': 'rounded-lg text-md'} text-white bg-slate-800 px-2 font-normal text-md w-fit h-fit`}>
@@ -104,7 +108,7 @@ const Chat = ({socket}) => {
           </div>
         </div>
        ))}
-
+       </div>
         </div>
         <div className="bg-slate-800 text-black text-sm fixed bottom-1 flex w-full items-center h-[40px]">
             <textarea type="text" value={messageInput} onChange={e => setMessageInput(e.target.value)} className='w-[27%] h-full focus:outline-none p-1 capitalize rounded-md' placeholder='Type your message here' onKeyDown={handleKeyDown}/>

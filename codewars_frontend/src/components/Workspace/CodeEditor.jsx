@@ -1,4 +1,4 @@
-import React, {useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { cpp } from '@codemirror/lang-cpp';
@@ -13,9 +13,11 @@ const CodeEditor = () => {
     const id=1
     const [selectedLanguage, setSelectedLanguage] = useState('cpp');
     const [showIP,setShowIP]=useState(true);
-    const [input,setInput]=useState(atob("Mwo0IDkKMiA3IDExIDE1CjMgNgozIDIgNAoyIDYKMyAz"))
-    const [output,setOutput]=useState(atob('MCAxCjEgMgowIDE='))
     const language_code=(selectedLanguage==='cpp'?54:(selectedLanguage==='javascript'?63:26));
+    const problems=useSelector(state=>state.problems);
+    const selectedProblem=useSelector(state=>state.selectedProblem);
+    const [input,setInput]=useState();
+    const [output,setOutput]=useState()
   
     const handleLanguageSelection = (event) => {
       setSelectedLanguage(event.target.value);
@@ -23,7 +25,7 @@ const CodeEditor = () => {
       setCode('');
       setOutput('');
     }
-  
+    
     const handleCodeRun=async()=>{
       setOutput('')
      const options = {
@@ -83,8 +85,13 @@ const CodeEditor = () => {
 }
 const handleCodeChange=(e)=>{
     setCode(e);
-    localStorage.setItem(`code-${id}`,e);
+    localStorage.setItem(`code-${selectedProblem}`,e);
 }
+useEffect(()=>{
+  setInput(atob(problems[selectedProblem].inputTestCases))
+  if(localStorage.getItem(`code-${selectedProblem}`))
+  setCode(localStorage.getItem(`code-${selectedProblem}`))
+},[selectedProblem])
   return (
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>
         <div className="bg-black h-[40px] flex items-center px-4 justify-between ">

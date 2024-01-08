@@ -1,4 +1,4 @@
-import React, {  useEffect } from 'react'
+import React, {  useEffect, useState } from 'react'
 import Navbar from '../Navbars/Navbar'
 import ProblemDescription from './ProblemDescription'
 import CodeEditor from './CodeEditor'
@@ -15,6 +15,7 @@ const Workspace = () => {
   const user=useSelector(state=>state.auth);
   const socket =io(serverUrl);  
   const dispatch=useDispatch();
+  const [loaded,setLoaded]=useState(false);
   useEffect(() => {
     const fetchRoom=async()=>{
       const room=await axios.get(serverUrl+`/get-room?roomId=`+id).then((res)=>res.data).catch((err)=>{console.log(err)});
@@ -25,6 +26,7 @@ const Workspace = () => {
       dispatch(setProblems(problems));
       dispatch(setRoom({roomId:room.roomId,category:room.category}));
       socket.emit('join-room',({ id: id, userName: user.displayName ,userid:user.userid}));
+      setLoaded(true);
       }
       else {
         alert("No room");
@@ -40,8 +42,8 @@ const Workspace = () => {
     <>
      <Navbar/>
      <div className="flex min-w-screen">
-      <ProblemDescription/>
-      <CodeEditor/>
+      {loaded && <ProblemDescription/>}
+      {loaded && <CodeEditor/>}
       <Chat socket={socket}/>
      </div>
     </>
