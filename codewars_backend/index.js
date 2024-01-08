@@ -49,7 +49,6 @@ app.get('/get-room',async(req,res)=>{
 app.post('/get-problems',async(req,res)=>{
     const {id}=req.body;
     const {category}=req.body;
-    console.log(id);
     try{
     let problems;
     if(category==='easy')
