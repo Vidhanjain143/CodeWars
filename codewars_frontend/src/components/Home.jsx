@@ -4,6 +4,8 @@ import Coder from "../assets/coder.jpg"
 import { useSelector } from 'react-redux';
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
+import {ToastContainer,toast,Slide} from 'react-toastify'
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
   const [selectedValue, setSelectedValue] = useState('easy');
@@ -13,6 +15,7 @@ const Home = () => {
   const handleDropdownChange = (event) => {
     setSelectedValue(event.target.value);
   };
+  const user=useSelector(state=>state.auth)
   const displayTime={
     "easy":"You will get 20 mins for 2 problems",
     "medium":"You will get 30 mins for 2 problems",
@@ -20,6 +23,10 @@ const Home = () => {
   }
 
   const createRoom=async()=>{
+      if(!user.displayName){
+        toast.error("Please login first",{position:'bottom-center',theme:"colored",autoClose:3000})
+        return;
+      }
        const response=await axios.post(serverUrl+'/create-room',{category:selectedValue})
        const roomId=response.data.roomId;
        navigate('/workspace/'+roomId);
@@ -46,6 +53,7 @@ const Home = () => {
             </div>
             <img src={Coder} alt="" className='w-1/2 h-fit'/>
         </div>
+        <ToastContainer transition={Slide}/>
     </div>
   )
 }

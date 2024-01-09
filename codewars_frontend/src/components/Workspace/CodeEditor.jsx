@@ -7,7 +7,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import axios from "axios";
 import { useSelector } from 'react-redux';
 
-const CodeEditor = () => {
+const CodeEditor = ({socket}) => {
     const user=useSelector(state=>state.auth);
     const [code,setCode]=useState('')
     const id=1
@@ -17,15 +17,53 @@ const CodeEditor = () => {
     const problems=useSelector(state=>state.problems);
     const selectedProblem=useSelector(state=>state.selectedProblem);
     const [input,setInput]=useState();
-    const [output,setOutput]=useState()
-  
+    const [output,setOutput]=useState();
+    const [statusId,setStatusId]=useState(0);
+    let [solvedProblems,setSolvedProblems]=useState(new Set())
     const handleLanguageSelection = (event) => {
       setSelectedLanguage(event.target.value);
       setInput('');
       setCode('');
       setOutput('');
     }
-    
+    const handleCodeSubmit=async()=>{
+      console.log(solvedProblems);
+      if(solvedProblems.has(selectedProblem)) { alert("Already done"); return;}
+      setOutput('')
+      const options = {
+       method: 'POST',
+       url: 'https://judge0-ce.p.rapidapi.com/submissions',
+       params: { base64_encoded: "true", fields: "*" },
+       headers: {
+         'content-type': 'application/json',
+         'Content-Type': 'application/json',
+         'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
+         'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
+       },
+       data:{
+         language_id:language_code,
+         source_code:btoa(code),
+         stdin:problems[selectedProblem].inputTestCases,
+         expected_output:problems[selectedProblem].expectedOutput
+       }
+     };
+     try {
+       console.log(options)
+       const response = await axios.request(options);
+       const token=response.data.token;
+       getOutput(token).then(()=>{
+        const message={
+             userId:1,
+             text:`${user.displayName} solved problem ${selectedProblem+1} ⭐`,
+             timestamp: new Date().toISOString(),
+        }
+         socket.emit('send-chat-message',message)
+         setSolvedProblems(new Set(solvedProblems.add(selectedProblem)));
+       })
+     }catch(err) {
+       console.log(err);
+     }
+    }
     const handleCodeRun=async()=>{
       setOutput('')
      const options = {
@@ -54,35 +92,48 @@ const CodeEditor = () => {
     }
   }
 
-  const getOutput=async(token)=>{
-    const options = {
-      method: 'GET',
-      url: 'https://judge0-ce.p.rapidapi.com/submissions/'+token,
-      params: { base64_encoded: "true", fields: "*" },
-      headers: {
-        'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
-        'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
-      },
-  }
-  try {
-    const response = await axios.request(options);
-    let statusId = response.data.status?.id;
+  const getOutput = (token) => {
+    return new Promise((resolve, reject) => {
+      const options = {
+        method: 'GET',
+        url: 'https://judge0-ce.p.rapidapi.com/submissions/' + token,
+        params: { base64_encoded: 'true', fields: '*' },
+        headers: {
+          'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
+          'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
+        },
+      };
+  
+      const processResponse = async () => {
+        try {
+          const response = await axios.request(options);
+          const statusId = response.data.status?.id;
+  
+          if (statusId === 1 || statusId === 2) {
+            // Processing, so run the function again after 2 seconds
+            setTimeout(() => {
+              processResponse();
+            }, 2000);
+          } else {
+            console.log(response.data);
+            if (response.data.status.id === 3) {
+              setOutput(atob(response.data.stdout));
+              setStatusId(1);
+              resolve();
+            } else {
+              setOutput(response.data.status.description);
+              reject("Incorrect");
+            }
+          }
+        } catch (error) {
+          console.log(error);
+          reject(error);
+        }
+      };
+      processResponse();
+    });
+  };
 
-    if (statusId === 1 || statusId === 2) {
-      //  processing --> so run again the same token after 2s
-      setTimeout(() => {
-        getOutput(token)
-      }, 2000);}
-      else {
-        console.log(response.data);
-        if(response.data.status.id===3)
-        setOutput(atob(response.data.stdout));
-       else setOutput(response.data.status.description);
-      }
- }catch(error){
-  console.log(error);
- }
-}
 const handleCodeChange=(e)=>{
     setCode(e);
     localStorage.setItem(`code-${selectedProblem}`,e);
@@ -92,6 +143,7 @@ useEffect(()=>{
   if(localStorage.getItem(`code-${selectedProblem}`))
   setCode(localStorage.getItem(`code-${selectedProblem}`))
 },[selectedProblem])
+
   return (
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>
         <div className="bg-black h-[40px] flex items-center px-4 justify-between ">
@@ -121,7 +173,7 @@ useEffect(()=>{
           <div className="text-white bg-gray-600 p-1 rounded-xl px-2 cursor-pointer font-normal" onClick={()=>setShowIP(!showIP)}>Console {(showIP===true?' 👇🏻':' 👆🏻')}</div>
           <div className="flex gap-4 items-center mr-3">
           <div className="text-white bg-gray-600 px-2 py-1 rounded-xl w-[60px] flex justify-center cursor-pointer" onClick={handleCodeRun}>Run</div>
-          <div className="text-white bg-green-700 py-1 w-[80px]flex justify-center px-2 rounded-xl cursor-pointer">Submit</div>
+          <div className="text-white bg-green-700 py-1 w-[80px]flex justify-center px-2 rounded-xl cursor-pointer" onClick={handleCodeSubmit}>Submit</div>
           </div>
         </div>
     </div> 

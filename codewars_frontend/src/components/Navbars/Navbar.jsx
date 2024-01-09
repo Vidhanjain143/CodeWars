@@ -8,9 +8,8 @@ import {setSignUpClick} from '../../store/slices/SignupClickedSlice'
 
 const Navbar = () => {
   const dispatch=useDispatch();
-  const onClicked=useSelector(state=>state.signupClick);
-    const [loggedUserClick,setLoggedUserClick]=useState(false);
-    const user=useSelector(state=>state.auth);
+  const [loggedUserClick,setLoggedUserClick]=useState(false);
+  const user=useSelector(state=>state.auth);
     
   return (
     <>

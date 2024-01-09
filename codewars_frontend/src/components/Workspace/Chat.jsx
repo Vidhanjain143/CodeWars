@@ -11,7 +11,6 @@ const Chat = ({socket}) => {
   const [messageInput, setMessageInput] = useState('');
   const [activeUsers, setActiveUsers] = useState([]);
   const category =useSelector(state=>state.room.category);
-  const [time,setTime]=useState(1145);
   const [minutes,setMinutes]=useState(0);
   const [seconds,setSeconds]=useState(0);
   const colors=[`gray-500`,`blue-600`];
@@ -26,7 +25,6 @@ const Chat = ({socket}) => {
     socket.on('timer',({timer,timerStarted})=>{
       console.log(timer,timerStarted);
       dispatch(setTimerStarted(timerStarted));
-      setTime(timer);
       if(timerStarted) startTimer(timer);
     })
     return () => {
@@ -36,6 +34,12 @@ const Chat = ({socket}) => {
       socket.off('timer');
     };
   }, [socket]);
+  useEffect(()=>{
+        console.log(category);
+        if(category==='easy') setMinutes(20);
+        else if(category==='medium') setMinutes(30);
+        else setMinutes(40);
+  },[category])
   const startTimer=(timer)=>{
      const initial=timer;
      setInterval(()=>{
