@@ -4,9 +4,11 @@ import { IoIosLogOut} from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { IoSend } from "react-icons/io5";
 import { setTimerStarted } from '../../store/slices/TimerStartedSlice';
+import { toast} from 'react-toastify';
 const Chat = ({socket}) => {
   const userId=useSelector(state=>state.auth.userid);
   const id=useSelector(state=>state.room.roomId);
+  const timerStarted=useSelector(state=>state.timerStarted)
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [activeUsers, setActiveUsers] = useState([]);
@@ -22,10 +24,13 @@ const Chat = ({socket}) => {
     socket.on('active-users',(users)=>{
       setActiveUsers(users);
     })
-    socket.on('timer',({timer,timerStarted})=>{
-      console.log(timer,timerStarted);
-      dispatch(setTimerStarted(timerStarted));
-      if(timerStarted) startTimer(timer);
+    socket.on('timer',({timer,timerStarted1})=>{
+      console.log(timer,timerStarted1);
+      console.log(timerStarted)
+      if(!timerStarted){
+      dispatch(setTimerStarted(timerStarted1));
+      if(timerStarted1) startTimer(timer);
+    }
     })
     return () => {
       socket.off('chat-message');
@@ -64,6 +69,8 @@ const Chat = ({socket}) => {
   }
   const handleCopy=()=>{
     navigator.clipboard.writeText(window.location.href);
+    toast.success("Link Copied",{position:'bottom-right',theme:"colored",autoClose:4000})
+    
   }
   const handleKeyDown=(e) => {
     if (e.key === 'Enter' && !e.shiftKey) { 
@@ -76,7 +83,8 @@ const Chat = ({socket}) => {
     console.log(category);
     if(activeUsers.length<2)
     {
-      console.log("Less users");
+      toast.info("Wait for one more user to join.Click again ",{position:'bottom-right',theme:"dark",autoClose:4000})
+      return;
     }
     socket.emit('user-ready',{userId:userId,roomId:id,category:category});
    
@@ -123,3 +131,16 @@ const Chat = ({socket}) => {
 }
 
 export default Chat
+
+
+{/* <div className={`fixed flex h-[20vh] bg-slate-900 w-[50vw] top-[30%] left-[25%] flex-col gap-4 px-3 py-3 border-green-200 rounded-xl border-1 outline-none z-10 ` +(firstClick?`hidden`:``)}>
+      <div className="flex items-center justify-between">
+        <div className="text-white text-2xl">Invite your friends to the contest</div>
+        <div className="text-white mr-2 cursor-pointer" onClick={() => setFirstClick(true)}><ImCross /></div>
+      </div>
+      <div className="flex w-[100%] items-center justify-between gap-2">
+        <div className="bg-gray-300 w-[90%] rounded-lg p-2 font-semibold">{window.location.href}</div>
+        <div className="text-white rounded-xl p-2 w-[10%] bg-blue-500 cursor-pointer flex items-center justify-center font-medium" onClick={handleCopyClick}>Copy</div>
+      </div>
+    </div>
+*/}

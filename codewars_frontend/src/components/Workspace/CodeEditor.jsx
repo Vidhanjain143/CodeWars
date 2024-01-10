@@ -6,6 +6,7 @@ import { java } from '@codemirror/lang-java';
 import { javascript } from '@codemirror/lang-javascript';
 import axios from "axios";
 import { useSelector } from 'react-redux';
+import { toast} from 'react-toastify';
 
 const CodeEditor = ({socket}) => {
     const user=useSelector(state=>state.auth);
@@ -19,6 +20,8 @@ const CodeEditor = ({socket}) => {
     const [input,setInput]=useState();
     const [output,setOutput]=useState();
     const [statusId,setStatusId]=useState(0);
+    const timerStarted=useSelector(state=>state.timerStarted)
+    const emoji=['😀', '😎', '😍', '🚀', '🌟', '🎉','👍']
     let [solvedProblems,setSolvedProblems]=useState(new Set())
     const handleLanguageSelection = (event) => {
       setSelectedLanguage(event.target.value);
@@ -27,6 +30,11 @@ const CodeEditor = ({socket}) => {
       setOutput('');
     }
     const handleCodeSubmit=async()=>{
+      if(!timerStarted)
+      {
+        toast.info("Wait for contest to begin",{position:'bottom-center',theme:"colored",autoClose:3000})
+        return;
+      }
       console.log(solvedProblems);
       if(solvedProblems.has(selectedProblem)) { alert("Already done"); return;}
       setOutput('')
@@ -54,7 +62,7 @@ const CodeEditor = ({socket}) => {
        getOutput(token).then(()=>{
         const message={
              userId:1,
-             text:`${user.displayName} solved problem ${selectedProblem+1} ⭐`,
+             text:`${user.displayName} solved problem ${selectedProblem+1} ${emoji[Math.floor(Math.random()*emoji.length)]}`,
              timestamp: new Date().toISOString(),
         }
          socket.emit('send-chat-message',message)
@@ -65,6 +73,11 @@ const CodeEditor = ({socket}) => {
      }
     }
     const handleCodeRun=async()=>{
+      if(!timerStarted)
+      {
+        toast.info("Wait for contest to begin",{position:'bottom-center',theme:"colored",autoClose:3000})
+        return;
+      }
       setOutput('')
      const options = {
       method: 'POST',
@@ -136,13 +149,16 @@ const CodeEditor = ({socket}) => {
 
 const handleCodeChange=(e)=>{
     setCode(e);
+    if(timerStarted)
     localStorage.setItem(`code-${selectedProblem}`,e);
 }
 useEffect(()=>{
+  if(timerStarted){
   setInput(atob(problems[selectedProblem].inputTestCases))
   if(localStorage.getItem(`code-${selectedProblem}`))
   setCode(localStorage.getItem(`code-${selectedProblem}`))
-},[selectedProblem])
+}
+},[selectedProblem,timerStarted])
 
   return (
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>

@@ -25,7 +25,7 @@ const ProblemDescription = ({socket}) => {
   return (
     <div className='w-[30%] bg-slate-800 flex flex-col  min-h-[89.5vh] text-white border-r-2 border-white'>
         <div className="bg-black h-[40px] flex items-end justify-between">
-          <div className='text-white bg-slate-800 ml-2 py-1 px-2 rounded-md mb-1'>Introduction</div>
+          <div className='text-white bg-slate-800 ml-2 py-1 px-2 rounded-md mb-1'>{timerStarted?'Problems':'Introduction'}</div>
           {timerStarted && (<div className='text-white bg-slate-800 mr-4 py-1 px-1 rounded-md flex items-center justify-between w-[11vh] mb-1'>
             <button onClick={handleBackClick}><IoCaretBackOutline size='25px'/></button>
            <div className="font-semibold text-md">{selectedProblem+1}</div>
