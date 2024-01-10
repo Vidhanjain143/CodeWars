@@ -86,14 +86,15 @@ io.on('connection',(socket)=>{
         if(readyUser[roomId].size<=2){
         startTime=Date.now();
         const remainingTime=time[category]*60;
-        if(readyUser[roomId].size===1)
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted:false});
-        else io.to(roomId).emit('timer',{timer:remainingTime,timerStarted:true})
+        if(readyUser[roomId].size===1){
+        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted1:false});
+        }
+        else io.to(roomId).emit('timer',{timer:remainingTime,timerStarted1:true})
       }
       else {
         const elapsedTime=Math.floor((Date.now()-startTime)/1000);
         const remainingTime=(time[category]*60)-elapsedTime;
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted:true});
+        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted1:true});
       }
       io.to(roomId).emit('chat-message',{userId:1,text:`${users[userId].userName} is ready ⚔️`})
     })
