@@ -4,7 +4,7 @@ import Coder from "../assets/coder.jpg"
 import { useSelector } from 'react-redux';
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
-import {toast} from 'react-toastify'
+import {ToastContainer, toast} from 'react-toastify'
 
 const Home = () => {
   const [selectedValue, setSelectedValue] = useState('easy');
@@ -52,6 +52,7 @@ const Home = () => {
             </div>
             <img src={Coder} alt="" className='w-1/2 h-fit'/>
         </div>
+        <ToastContainer/>
     </div>
   )
 }

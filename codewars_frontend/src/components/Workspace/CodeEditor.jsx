@@ -20,6 +20,7 @@ const CodeEditor = ({socket}) => {
     const [input,setInput]=useState();
     const [output,setOutput]=useState();
     const [statusId,setStatusId]=useState(0);
+    const serverUrl=import.meta.env.VITE_SERVER_URL
     const timerStarted=useSelector(state=>state.timerStarted)
     const emoji=['😀', '😎', '😍', '🚀', '🌟', '🎉','👍']
     let [solvedProblems,setSolvedProblems]=useState(new Set())
@@ -30,9 +31,13 @@ const CodeEditor = ({socket}) => {
       setOutput('');
     }
     const handleCodeSubmit=async()=>{
-      if(!timerStarted)
+      if(timerStarted===0)
       {
         toast.info("Wait for contest to begin",{position:'bottom-center',theme:"colored",autoClose:3000})
+        return;
+      }
+      if(timerStarted===2){
+        toast.info("Contest ended. You can run now to just try.",{position:'bottom-center',theme:"colored",autoClose:3000})
         return;
       }
       console.log(solvedProblems);
@@ -67,13 +72,15 @@ const CodeEditor = ({socket}) => {
         }
          socket.emit('send-chat-message',message)
          setSolvedProblems(new Set(solvedProblems.add(selectedProblem)));
+         console.log(solvedProblems);
+         const response=axios.post(serverUrl+'/add-score',{userId:user.userid,selectedProblem:selectedProblem})
        })
      }catch(err) {
        console.log(err);
      }
     }
     const handleCodeRun=async()=>{
-      if(!timerStarted)
+      if(!timerStarted===0)
       {
         toast.info("Wait for contest to begin",{position:'bottom-center',theme:"colored",autoClose:3000})
         return;
@@ -149,16 +156,16 @@ const CodeEditor = ({socket}) => {
 
 const handleCodeChange=(e)=>{
     setCode(e);
-    if(timerStarted)
+    if(timerStarted===1)
     localStorage.setItem(`code-${selectedProblem}`,e);
 }
 useEffect(()=>{
-  if(timerStarted){
+  if(timerStarted===1){
   setInput(atob(problems[selectedProblem].inputTestCases))
   if(localStorage.getItem(`code-${selectedProblem}`))
   setCode(localStorage.getItem(`code-${selectedProblem}`))
 }
-},[selectedProblem,timerStarted])
+},[selectedProblem,timerStarted,selectedLanguage])
 
   return (
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>

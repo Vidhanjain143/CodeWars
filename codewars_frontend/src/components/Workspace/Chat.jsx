@@ -8,7 +8,6 @@ import { toast} from 'react-toastify';
 const Chat = ({socket}) => {
   const userId=useSelector(state=>state.auth.userid);
   const id=useSelector(state=>state.room.roomId);
-  const timerStarted=useSelector(state=>state.timerStarted)
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [activeUsers, setActiveUsers] = useState([]);
@@ -24,12 +23,11 @@ const Chat = ({socket}) => {
     socket.on('active-users',(users)=>{
       setActiveUsers(users);
     })
-    socket.on('timer',({timer,timerStarted1})=>{
-      console.log(timer,timerStarted1);
-      console.log(timerStarted)
-      if(!timerStarted){
-      dispatch(setTimerStarted(timerStarted1));
-      if(timerStarted1) startTimer(timer);
+    socket.on('timer',({timer,timerStarted})=>{
+      console.log(timer,timerStarted);
+      if(timerStarted){
+      dispatch(setTimerStarted(timerStarted));
+      if(timerStarted) startTimer(timer);
     }
     })
     return () => {
@@ -46,12 +44,17 @@ const Chat = ({socket}) => {
         else setMinutes(40);
   },[category])
   const startTimer=(timer)=>{
-     const initial=timer;
-     setInterval(()=>{
+     
+     const interval=setInterval(()=>{
          setMinutes(Math.floor(timer/60));
          setSeconds(timer%60);
          timer--;
-     },initial)
+         if(timer<0) {
+          clearInterval(interval);
+          //socket.emit('send-chat-message',{ userId:1,text:'Contest ended',timestamp: new Date().toISOString()})
+          dispatch(setTimerStarted(2));
+         }
+     },1000)
   }
   const sendMessage = () => {
     if (messageInput.trim() !== '') {

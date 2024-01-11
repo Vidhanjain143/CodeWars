@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import {GoogleAuthProvider, signInWithPopup, signOut} from 'firebase/auth'
 import {auth} from '../../components/auth/firebase'
 import { setSignUpClick } from './SignupClickedSlice';
-
+import axios from 'axios';
+const serverUrl=import.meta.env.VITE_SERVER_URL
 const initialState = {
   userid: null,
   displayName:null,
@@ -42,6 +43,11 @@ export const signInWithGoogle = async (dispatch) => {
       const result = await signInWithPopup(auth,provider);
       dispatch(setUser({id:result.user.uid,name:result.user.displayName}));
       dispatch(setSignUpClick(false));
+      try{
+      const newUser=await axios.post(serverUrl+'/create-user',{userId:result.user.uid,name:result.user.displayName})
+      console.log(newUser.data);
+      }catch(err){ console.log(err)};
+
     } catch (error) {
       console.error('Google Sign-In Error:', error);
     }
