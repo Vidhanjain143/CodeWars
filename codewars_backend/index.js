@@ -6,6 +6,7 @@ const Room=require('./models/Room');
 const {Easy}=require('./models/Problem')
 const {Medium}=require('./models/Problem')
 const {Hard}=require('./models/Problem')
+const User=require('./models/User')
 const cors=require('cors')
 const express = require('express');
 const http = require('http');
@@ -25,7 +26,10 @@ const io = new Server(server,{
 const users = {};
 const readyUser={};
 let startTime;
-const time={ "easy":20,"medium":30,"hard":45};
+const time={ "easy":3,"medium":30,"hard":45};
+app.get('/',(req,res)=>{
+    res.send("Hello");
+})
 app.post('/create-room',async (req,res)=>{
     try{
         const {category}=req.body;
@@ -39,6 +43,22 @@ app.post('/create-room',async (req,res)=>{
     }catch(err){
         console.log("Room error=> ",err);
     }  
+})
+app.post('/create-user',async (req,res)=>{
+    const {userId,name}=req.body;
+    console.log(userId,name);
+    try{
+    const user=await User.findOne({userId:userId});
+    console.log(user);
+    if(!user){
+        const newUser=await User.create({
+            userId:userId,
+            name:name,
+            score:0,
+        })
+        res.send(newUser);
+    }
+   }catch(err){ console.log(err); }
 })
 app.get('/get-room',async(req,res)=>{
     const roomId=req.query.roomId;
@@ -60,6 +80,19 @@ app.post('/get-problems',async(req,res)=>{
     }catch(err){
         console.log(err);
     }
+})
+
+app.post('/add-score',async(req,res)=>{
+    const {userId,selectedProblem}=req.body;
+    const user=await User.findOne({userId:userId});
+    user.score=user.score+(10+(selectedProblem*10));
+    user.save();
+})
+
+app.get('/get-users',async (req,res)=>{
+    
+    const users=await User.find().sort({score:-1});
+    res.json(users).send();
 })
 io.on('connection',(socket)=>{
     socket.on('join-room',({id,userName,userid})=>{
@@ -87,14 +120,14 @@ io.on('connection',(socket)=>{
         startTime=Date.now();
         const remainingTime=time[category]*60;
         if(readyUser[roomId].size===1){
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted1:false});
+        socket.emit('timer',{timer:remainingTime,timerStarted:0});
         }
-        else io.to(roomId).emit('timer',{timer:remainingTime,timerStarted1:true})
+        else io.to(roomId).emit('timer',{timer:remainingTime,timerStarted:1})
       }
       else {
         const elapsedTime=Math.floor((Date.now()-startTime)/1000);
         const remainingTime=(time[category]*60)-elapsedTime;
-        io.to(roomId).to(userId).emit('timer',{timer:remainingTime,timerStarted1:true});
+        socket.emit('timer',{timer:remainingTime,timerStarted1:1});
       }
       io.to(roomId).emit('chat-message',{userId:1,text:`${users[userId].userName} is ready ⚔️`})
     })
@@ -104,6 +137,7 @@ io.on('connection',(socket)=>{
           console.log(`User ${userName} left`);
           delete users[userName];
         }
+
     })
 })
 server.listen(port, () => {
