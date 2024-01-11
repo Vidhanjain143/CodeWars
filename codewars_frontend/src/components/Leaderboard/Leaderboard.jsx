@@ -9,7 +9,6 @@ const Leaderboard = () => {
         const fetchUsers=async()=>{
             const users=await axios.get(serverUrl+'/get-users').then(res=>res.data).catch((err)=>{console.log(err)});
             setUsers(users);
-            console.log(users);
         }
         fetchUsers();
     },[])

@@ -171,13 +171,13 @@ useEffect(()=>{
     <div className='w-[40%] bg-slate-800 flex flex-col h-fit min-h-[89.5vh] border-r-2'>
         <div className="bg-black h-[40px] flex items-center px-4 justify-between ">
             <div className="text-white bg-slate-800 p-1 rounded-xl text-sm px-2">{user?.displayName}</div>
-            <select className="p-1 rounded-lg text-sm bg-slate-800 text-white" value={selectedLanguage} onChange={handleLanguageSelection}>
+            <select className="p-1 rounded-lg text-sm bg-slate-800 text-white outline-none" value={selectedLanguage} onChange={handleLanguageSelection}>
                 <option value="cpp">C++</option>
                 <option value="javascript">JavaScript</option>
                 <option value="java">Java</option>
             </select>
         </div>
-        <CodeMirror value={code} theme={vscodeDark} style={{fontSize:'16px'}} maxHeight={(showIP?'390px':'550px')} placeholder={'Write you code here'}
+        <CodeMirror value={code} theme={vscodeDark} style={{fontSize:'16px'}} maxHeight={(showIP?'390px':'550px')} placeholder={'Write your code here'}
         extensions={[(selectedLanguage==='javascript'?javascript():(selectedLanguage==='cpp'?cpp():java()))]}
         onChange={handleCodeChange} />
         { showIP &&(

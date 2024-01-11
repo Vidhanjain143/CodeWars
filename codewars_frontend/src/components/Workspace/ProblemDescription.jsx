@@ -26,13 +26,13 @@ const ProblemDescription = ({socket}) => {
     <div className='w-[30%] bg-slate-800 flex flex-col  min-h-[89.5vh] text-white border-r-2 border-white'>
         <div className="bg-black h-[40px] flex items-end justify-between">
           <div className='text-white bg-slate-800 ml-2 py-1 px-2 rounded-md mb-1'>{timerStarted?'Problems':'Introduction'}</div>
-          {timerStarted && (<div className='text-white bg-slate-800 mr-4 py-1 px-1 rounded-md flex items-center justify-between w-[11vh] mb-1'>
+          {timerStarted!==0 && (<div className='text-white bg-slate-800 mr-4 py-1 px-1 rounded-md flex items-center justify-between w-[11vh] mb-1'>
             <button onClick={handleBackClick}><IoCaretBackOutline size='25px'/></button>
            <div className="font-semibold text-md">{selectedProblem+1}</div>
            <button onClick={handleForwardClick}><IoCaretForwardOutline size='25px'/></button>
           </div>)}
         </div>
-        {!timerStarted && (<div className="font-2xl p-3">
+        {timerStarted===0 && (<div className="font-2xl p-3">
         <span className='text-xl font-semibold'>Welcome 🎉 to CodeWars!</span><br/><br/>
         Let's get you set up and ready to compete.<br/>
         Follow these instructions to begin your coding journey.<br/><br/>
@@ -47,7 +47,7 @@ const ProblemDescription = ({socket}) => {
         Use the editor to write your solution and click the 'Run' 🏃‍♂️ to test it. <br/>
         Once you're confident in your solution, click the 'Submit' 💯 to solve the problem and compete for the victory<br/><br/>
         </div>)}
-        {timerStarted &&(
+        {timerStarted!==0 &&(
           <div className="h-[84vh] overflow-y-auto">
           <div className="p-3 flex flex-col justify-start gap-2">
             <div className="text-2xl font-semibold">{selectedProblem+1}. {problems[selectedProblem].title}</div>
