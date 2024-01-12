@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Navbar from './Navbars/Navbar'
-import Coder from "../assets/coder.jpg"
+import Coder from "../assets/Coder.jpg"
 import { useSelector } from 'react-redux';
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
