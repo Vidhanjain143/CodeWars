@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
+  transports: ["websocket"],
   cors: {
     origin: ["https://code-wars-1.vercel.app", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
