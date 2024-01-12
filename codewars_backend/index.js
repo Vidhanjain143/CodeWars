@@ -21,6 +21,7 @@ const io = new Server(server, {
   cors: {
     origin: ["https://code-wars-1.vercel.app", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
+    transport: ["websocket"],
   },
 });
 const users = {};
