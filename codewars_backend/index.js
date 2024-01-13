@@ -11,18 +11,20 @@ const cors = require("cors");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const deployedUrl=process.env.DEPLOYED_URL;
+console.log(deployedUrl)
 mongoose.connect(process.env.MONGO_DB_URI);
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({
-  origin: ["https://code-wars-1.vercel.app", "http://127.0.0.1:5173"],
+  origin: deployedUrl,
 }));
 const server = http.createServer(app);
 const io = new Server(server, {
-  transports: ["websocket","polling"],
+  transports: ["websocket"],
   cors: {
-    origin: ["https://code-wars-1.vercel.app", "http://127.0.0.1:5173"],
+    origin: deployedUrl,
     methods: ["GET", "POST"],
     transport: ["websocket"],
   },
