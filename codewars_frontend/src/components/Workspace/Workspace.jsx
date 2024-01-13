@@ -18,7 +18,9 @@ const Workspace = () => {
   const {id}=useParams();
   const serverUrl=import.meta.env.VITE_SERVER_URL;
   const user=useSelector(state=>state.auth);
-  const socket =io(serverUrl);  
+  const socket =io(serverUrl,{
+      transports: ['websocket','polling'],
+  });  
   const dispatch=useDispatch();
   const [loaded,setLoaded]=useState(false);
   const [roomFound,setRoomFound]=useState(false);
