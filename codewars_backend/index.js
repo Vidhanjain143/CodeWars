@@ -12,7 +12,6 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const deployedUrl=process.env.DEPLOYED_URL;
-console.log(deployedUrl)
 mongoose.connect(process.env.MONGO_DB_URI);
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -69,9 +68,13 @@ app.post("/create-user", async (req, res) => {
   }
 });
 app.get("/get-room", async (req, res) => {
+  try{
   const roomId = req.query.roomId;
   const room = await Room.findOne({ roomId: roomId });
   res.send(room);
+  }catch(err){
+    console.log(err);
+  }
 });
 
 app.post("/get-problems", async (req, res) => {
