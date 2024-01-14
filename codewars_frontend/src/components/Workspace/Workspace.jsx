@@ -29,10 +29,9 @@ const Workspace = () => {
   }
   useEffect(() => {
     const fetchRoom=async()=>{
+      try{
       const room=await axios.get(serverUrl+`/get-room?roomId=`+id).then((res)=>res.data).catch((err)=>{console.log(err)});
-      console.log(room);
       const problems=await axios.post(serverUrl+'/get-problems',{id:room.problems,category:room.category}).then((res)=>res.data).catch((err)=>{console.log(err)});
-      console.log(problems);
       if(room.category){
       dispatch(setProblems(problems));
       dispatch(setRoom({roomId:room.roomId,category:room.category}));
@@ -43,6 +42,9 @@ const Workspace = () => {
         setRoomFound(false);
         toast.error("No room found",{position:'bottom-center',theme:"colored",autoClose:3000})
       }
+    }catch(err){
+      console.log(err);
+    }
       setLoaded(true);
     }
     fetchRoom();
