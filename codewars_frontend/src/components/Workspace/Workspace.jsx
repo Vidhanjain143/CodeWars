@@ -29,6 +29,7 @@ const Workspace = () => {
   }
   useEffect(() => {
     const fetchRoom=async()=>{
+      setLoaded(true);
       try{
       const room=await axios.get(serverUrl+`/get-room?roomId=`+id).then((res)=>res.data).catch((err)=>{console.log(err)});
       const problems=await axios.post(serverUrl+'/get-problems',{id:room.problems,category:room.category}).then((res)=>res.data).catch((err)=>{console.log(err)});
@@ -45,7 +46,7 @@ const Workspace = () => {
     }catch(err){
       console.log(err);
     }
-      setLoaded(true);
+      
     }
     fetchRoom();
 
@@ -53,7 +54,7 @@ const Workspace = () => {
     socket.disconnect();
     for(let i in [0,1]) localStorage.removeItem(`code-${i}`);
   }
-  }, [socket]);
+  }, [serverUrl, id, dispatch, setProblems, setRoom, socket, user]);
   return (
     <>
      <Navbar/>
