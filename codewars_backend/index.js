@@ -31,7 +31,7 @@ const io = new Server(server, {
 const users = {};
 const readyUser = {};
 let startTime;
-const time = { easy: 3, medium: 30, hard: 45 };
+const time = { easy: 20, medium: 30, hard: 45 };
 app.get("/", (req, res) => {
   res.send("Hello");
 });
