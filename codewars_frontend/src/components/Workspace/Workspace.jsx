@@ -54,7 +54,7 @@ const Workspace = () => {
     socket.disconnect();
     for(let i in [0,1]) localStorage.removeItem(`code-${i}`);
   }
-  }, [serverUrl, id, dispatch, setProblems, setRoom, socket, user]);
+  }, [socket]);
   return (
     <>
      <Navbar/>
