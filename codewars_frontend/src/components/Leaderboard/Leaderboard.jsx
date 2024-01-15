@@ -7,8 +7,12 @@ const Leaderboard = () => {
     const serverUrl=import.meta.env.VITE_SERVER_URL;
     useEffect(()=>{
         const fetchUsers=async()=>{
+            try{
             const users=await axios.get(serverUrl+'/get-users').then(res=>res.data).catch((err)=>{console.log(err)});
             setUsers(users);
+            }catch(err){
+                console.log(err);
+            }
         }
         fetchUsers();
     },[])
