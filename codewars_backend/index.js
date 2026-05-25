@@ -68,12 +68,24 @@ app.post("/create-user", async (req, res) => {
   }
 });
 app.get("/get-room", async (req, res) => {
-  try{
-  const roomId = req.query.roomId;
-  const room = await Room.findOne({ roomId: roomId });
-  res.send(room);
-  }catch(err){
+  try {
+    const roomId = req.query.roomId;
+    const room = await Room.findOne({ roomId: roomId });
+
+    if (!room) {
+      return res.status(404).send({ message: "Room not found" });
+    }
+
+    res.send({
+      roomId: room.roomId,
+      category: room.category,
+      problems: room.problems,
+      contestStarted: room.contestStarted,
+      startTime: room.startTime,
+    });
+  } catch (err) {
     console.log(err);
+    res.status(500).send({ message: "Internal server error" });
   }
 });
 
@@ -106,6 +118,7 @@ app.get("/get-users", async (req, res) => {
     console.log(err);
   }
 });
+
 
 io.on("connection", (socket) => {
   socket.on("join-room", ({ id, userName, userid }) => {

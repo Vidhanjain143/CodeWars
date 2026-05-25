@@ -16,6 +16,8 @@ const Chat = ({socket}) => {
   const [seconds,setSeconds]=useState(0);
   const colors=[`gray-500`,`blue-600`];
   const dispatch=useDispatch();
+  const [isReadyClicked, setIsReadyClicked] = useState(false);
+
   useEffect(() => {
     socket.on('chat-message', message => {
       setMessages(prevMessages => [...prevMessages, message]);
@@ -38,7 +40,6 @@ const Chat = ({socket}) => {
     };
   }, [socket]);
   useEffect(()=>{
-        console.log(category);
         if(category==='easy') setMinutes(20);
         else if(category==='medium') setMinutes(30);
         else setMinutes(40);
@@ -83,13 +84,15 @@ const Chat = ({socket}) => {
 
    const handleUserReady=(e)=>{
     e.preventDefault();
-    console.log(category);
     if(activeUsers.length<2)
     {
       toast.info("Wait for one more user to join.Click again ",{position:'bottom-right',theme:"dark",autoClose:4000})
       return;
     }
-    socket.emit('user-ready',{userId:userId,roomId:id,category:category});
+    if(!isReadyClicked){
+      setIsReadyClicked(true);
+      socket.emit('user-ready',{userId:userId,roomId:id,category:category});
+    }
    
    }
   return (
@@ -111,7 +114,7 @@ const Chat = ({socket}) => {
           </div>
         ))}
           </div>
-          <button className='bg-blue-600 text-white mt-2  py-1 rounded-xl hover:shadow-md hover:shadow-blue-400 mb-1' onClickCapture={handleUserReady}>Are you Ready!!!</button>
+          <button className='bg-blue-600 text-white mt-2  py-1 rounded-xl hover:shadow-md  mb-1 ${ isReadyClicked ? `opacity-30 cursor-not-allowed` : `hover:shadow-blue-400`}' onClickCapture={handleUserReady}>Are you Ready!!!</button>
         </div>
         {/*Chat Section*/}
         <div className="bg-slate-900 flex-1">

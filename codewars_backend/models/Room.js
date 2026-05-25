@@ -13,7 +13,15 @@ const roomSchema=mongoose.Schema({
     problems:{
         type:[Number],
     },
-   
+    contestStarted: {
+        type: Boolean,
+        default: false, // Initially, the contest has not started
+    },
+    startTime: {
+    type: Date, // Stores the timestamp when the contest starts
+    default: null,
+    },
+
 })
 
 const Room=mongoose.model('Room',roomSchema);
